@@ -17,4 +17,8 @@ public class ProjectRequest {
     private String architecture;
 
 
+    private String status;
+    private String projectManager;
+    private String client;
+
 }

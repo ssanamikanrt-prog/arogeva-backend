@@ -12,6 +12,7 @@ public interface ProjectService {
 
     List<ProjectResponse> getAllProjects();
     
+    List<ProjectResponse> getProjectsByStatus(String status);
 
     ProjectResponse getProjectById(Integer projectId);
 

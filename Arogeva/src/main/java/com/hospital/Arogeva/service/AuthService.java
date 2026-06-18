@@ -1,5 +1,6 @@
 package com.hospital.Arogeva.service;
 
+import com.hospital.Arogeva.advices.ApiResponse;
 import com.hospital.Arogeva.entity.Resource;
 import com.hospital.Arogeva.entity.User;
 import com.hospital.Arogeva.payload.LoginRequest;
@@ -8,6 +9,7 @@ import com.hospital.Arogeva.payload.UserResponse;
 import com.hospital.Arogeva.repository.ResourceRepository;
 import com.hospital.Arogeva.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.hospital.Arogeva.entity.Role;
@@ -28,6 +30,8 @@ import java.util.Map;
 import com.hospital.Arogeva.security.JwtTokenProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PostMapping;
+
 @Service
 public class AuthService {
 
@@ -56,7 +60,8 @@ public class AuthService {
 
     public List<UserResponse> getAllUsersForDropdown() {
 
-        List<User> users = userRepository.findAll().stream()
+        List<User> users = userRepository.findAll()
+                .stream()
                 .filter(u -> "true".equalsIgnoreCase(u.getIsActive()) || "Y".equalsIgnoreCase(u.getIsActive()) || "1".equals(u.getIsActive()))
                 .collect(Collectors.toList());
 
@@ -197,4 +202,6 @@ public class AuthService {
             return new LoginResponse(false, "Error creating user: " + e.getMessage(), null);
         }
     }
+
+
 }

@@ -25,5 +25,10 @@ public class ProjectResponse {
     private String message;
     private boolean success;
 
+    private String status;
+
+    private String projectManager;
+    private String client;
+
 
 }
