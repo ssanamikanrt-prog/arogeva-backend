@@ -51,4 +51,6 @@ public class ActivityTypeController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
+
+
 }

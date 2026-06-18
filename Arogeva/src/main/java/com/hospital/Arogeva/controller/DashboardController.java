@@ -62,4 +62,7 @@ public class DashboardController {
     public ResponseEntity<ApiResponse<EffortEntryWrapperResponse>> getEffortEntriesByResource(@PathVariable Integer resourceId) {
         return ResponseEntity.ok(new ApiResponse<>(dashboardService.getEffortEntriesByResource(resourceId)));
     }
+
+
+
 }

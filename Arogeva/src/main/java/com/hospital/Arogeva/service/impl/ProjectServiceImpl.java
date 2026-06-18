@@ -40,6 +40,9 @@ public class ProjectServiceImpl implements ProjectService {
                     project.setEndDate(request.getEndDate());
                     project.setArchitecture(request.getArchitecture());
                     project.setUpdatedAt(LocalDateTime.now());
+                    project.setStatus(request.getStatus());
+                    project.setProjectManager(request.getProjectManager());
+                    project.setClient(request.getClient());
                     projectRepository.save(project);
                     response.setSuccess(true);
                     response.setMessage("Project updated successfully");
@@ -59,6 +62,9 @@ public class ProjectServiceImpl implements ProjectService {
                 project.setEndDate(request.getEndDate());
                 project.setArchitecture(request.getArchitecture());
                 project.setCreatedAt(LocalDateTime.now());
+                project.setStatus(request.getStatus());
+                project.setProjectManager(request.getProjectManager());
+                project.setClient(request.getClient());
                 projectRepository.save(project);
                 response.setSuccess(true);
                 response.setMessage("Project created successfully");
@@ -74,6 +80,9 @@ public class ProjectServiceImpl implements ProjectService {
             response.setArchitecture(project.getArchitecture());
             response.setCreatedAt(project.getCreatedAt());
             response.setUpdatedAt(project.getUpdatedAt());
+            response.setStatus(project.getStatus());
+            response.setProjectManager(project.getProjectManager());
+            response.setClient(project.getClient());
             
         } catch (Exception e) {
             response.setSuccess(false);
@@ -86,6 +95,14 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ProjectResponse> getAllProjects() {
         return projectRepository.findAll()
+                .stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProjectResponse> getProjectsByStatus(String status) {
+        return projectRepository.findByStatus(status)
                 .stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
@@ -144,6 +161,9 @@ public class ProjectServiceImpl implements ProjectService {
         response.setArchitecture(project.getArchitecture());
         response.setCreatedAt(project.getCreatedAt());
         response.setUpdatedAt(project.getUpdatedAt());
+        response.setStatus(project.getStatus());
+        response.setProjectManager(project.getProjectManager());
+        response.setClient(project.getClient());
         response.setSuccess(true);
         return response;
     }

@@ -38,6 +38,15 @@ public class ProjectController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
+
+
+    @Operation(summary = "Get Projects By Status", description = "Fetches all Projects filtered by their status")
+    @GetMapping("/status/{status}")
+    public ResponseEntity<ApiResponse<List<ProjectResponse>>> getProjectsByStatus(@RequestParam(required = false) String status) {
+        List<ProjectResponse> response = projectService.getProjectsByStatus(status);
+        return ResponseEntity.ok(new ApiResponse<>(response));
+    }
+
     @Operation(summary = "Get Project By ID", description = "Fetches a specific Project by its ID")
     @GetMapping("/{projectId}")
     public ResponseEntity<ApiResponse<ProjectResponse>> getProjectById(@PathVariable Integer projectId) {
@@ -51,4 +60,6 @@ public class ProjectController {
         ProjectResponse response = projectService.deleteProject(projectId);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
+
+  
 }
