@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
@@ -14,20 +15,33 @@ public class JwtTokenProvider {
 
     // Use a static 256-bit secret key so tokens survive server restarts!
     private final String jwtSecretString = "ArogevaSuperSecretKeyForJwtValidationThatIsAtLeast32Bytes!";
-    private final Key jwtSecret = Keys.hmacShaKeyFor(jwtSecretString.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    private final Key jwtSecret = Keys.hmacShaKeyFor(jwtSecretString.getBytes(StandardCharsets.UTF_8));
 
-    // 24 hours
-    private final int jwtExpirationInMs = 86400000;
+    // 1 hour for access token
+    private final int jwtExpirationInMs = 3600000;
+    
+    // 7 days for refresh token
+    private final int refreshExpirationInMs = 604800000;
 
-    public String generateToken(Authentication authentication) {
-        String userIdStr = authentication.getName();
-
+    public String generateAccessToken(String userIdStr) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
         return Jwts.builder()
                 .setSubject(userIdStr)
-                .setIssuedAt(new Date())
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(jwtSecret)
+                .compact();
+    }
+
+    public String generateRefreshToken(String userIdStr) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + refreshExpirationInMs);
+
+        return Jwts.builder()
+                .setSubject(userIdStr)
+                .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(jwtSecret)
                 .compact();

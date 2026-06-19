@@ -52,12 +52,7 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .addServersItem(new Server()
-                        .url("http://localhost:8082")
-                        .description("Local Development Server"))
-                .addServersItem(new Server()
-                        .url("https://192.168.10.73:8082")
-                        .description("Production Server"))
+                .addServersItem(new Server().url("/"))
                 .info(new Info()
                         .title("Arogeva V2 API")
                         .version("1.0")
