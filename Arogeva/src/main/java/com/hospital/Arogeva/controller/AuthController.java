@@ -8,6 +8,8 @@ import com.hospital.Arogeva.payload.UserResponse;
 import com.hospital.Arogeva.payload.CreateUserRequest;
 import com.hospital.Arogeva.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +37,18 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest loginRequest) {
         LoginResponse response = authService.authenticate(loginRequest);
+        if (response.isSuccess() && response.getRefreshToken() != null) {
+            ResponseCookie cookie = ResponseCookie.from("refresh_token", response.getRefreshToken())
+                    .httpOnly(true)
+                    .secure(true) // Should be true in production with HTTPS
+                    .path("/api/auth")
+                    .maxAge(7 * 24 * 60 * 60)
+                    .sameSite("Strict")
+                    .build();
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .body(new ApiResponse<>(response));
+        }
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
@@ -45,4 +59,28 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
+    @Operation(summary = "Refresh Token", description = "Generates a new access token using the refresh token cookie")
+    @PostMapping("/refresh-token")
+    public ResponseEntity<ApiResponse<LoginResponse>> refreshToken(@CookieValue(name = "refresh_token", required = false) String refreshToken) {
+        LoginResponse response = authService.refreshToken(refreshToken);
+        if (!response.isSuccess()) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).body(new ApiResponse<>(response));
+        }
+        return ResponseEntity.ok(new ApiResponse<>(response));
+    }
+
+    @Operation(summary = "Logout", description = "Clears the refresh token cookie to log the user out")
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<String>> logout() {
+        ResponseCookie cookie = ResponseCookie.from("refresh_token", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/api/auth")
+                .maxAge(0) // delete cookie
+                .sameSite("Strict")
+                .build();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(new ApiResponse<>("Logged out successfully"));
+    }
 }

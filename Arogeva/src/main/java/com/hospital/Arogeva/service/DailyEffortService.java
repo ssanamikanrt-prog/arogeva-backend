@@ -2,6 +2,7 @@ package com.hospital.Arogeva.service;
 
 import com.hospital.Arogeva.entity.*;
 import com.hospital.Arogeva.entity.Module;
+import com.hospital.Arogeva.exceptions.ResourceNotFoundException;
 import com.hospital.Arogeva.payload.DailyEffortRequest;
 import com.hospital.Arogeva.payload.DailyEffortResponse;
 import com.hospital.Arogeva.payload.ResourceDropdownResponse;
@@ -44,9 +45,16 @@ public class DailyEffortService {
     @Autowired
     private UserRepository userRepository;
 
+
     public DailyEffortResponse saveOrUpdateEffort(DailyEffortRequest request, String currentUserId) {
         try {
+            
             DailyEffortEntry entry;
+
+            if(request.getProjectId() == null) {
+                throw new ResourceNotFoundException("project Id is must required ");
+            }
+
             
             if (request.getEntryId() != null) {
 
@@ -63,24 +71,12 @@ public class DailyEffortService {
                 }
             }
 
-            if (request.getResourceId() != null) {
-                entry.setResource(resourceRepository.getReferenceById(request.getResourceId()));
-            }
-            if (request.getProjectId() != null) {
-                entry.setProject(projectRepository.getReferenceById(request.getProjectId()));
-            }
-            if (request.getWeekId() != null) {
-                entry.setWeek(projectWeekRepository.getReferenceById(request.getWeekId()));
-            }
-            if (request.getModuleId() != null) {
-                entry.setModule(moduleRepository.getReferenceById(request.getModuleId()));
-            }
-            if (request.getActivityId() != null) {
-                entry.setActivity(activityTypeRepository.getReferenceById(request.getActivityId()));
-            }
-            if (request.getStatusId() != null) {
-                entry.setStatus(workStatusRepository.getReferenceById(request.getStatusId()));
-            }
+            entry.setResource(request.getResourceId() != null ? resourceRepository.getReferenceById(request.getResourceId()) : null);
+            entry.setProject(request.getProjectId() != null ? projectRepository.getReferenceById(request.getProjectId()) : null);
+            entry.setWeek(request.getWeekId() != null ? projectWeekRepository.getReferenceById(request.getWeekId()) : null);
+            entry.setModule(request.getModuleId() != null ? moduleRepository.getReferenceById(request.getModuleId()) : null);
+            entry.setActivity(request.getActivityId() != null ? activityTypeRepository.getReferenceById(request.getActivityId()) : null);
+            entry.setStatus(request.getStatusId() != null ? workStatusRepository.getReferenceById(request.getStatusId()) : null);
 
             
             entry.setWorkDate(request.getWorkDate());
@@ -128,8 +124,16 @@ public class DailyEffortService {
         }).collect(Collectors.toList());
     }
 
-    public EffortEntryWrapperResponse getMyEffortEntries(Integer weekId, String userId) {
-        List<DailyEffortEntry> entryList = dailyEffortRepository.findByWeekIdAndUserIdForLogs(weekId, userId);
+    public EffortEntryWrapperResponse getMyEffortEntries(Integer weekId, String userId, Integer projectId) {
+
+        List<DailyEffortEntry> entryList;
+
+        if (projectId != null) {
+            entryList = dailyEffortRepository.findByWeekIdAndUserIdAndProjectIdForLogs(weekId, userId, projectId);
+
+        } else {
+            entryList = dailyEffortRepository.findByWeekIdAndUserIdForLogs(weekId, userId);
+        }
 
         List<EffortEntryResponse> entries = entryList.stream().map(e -> {
             String resourceName = e.getCreatedBy() != null ? e.getCreatedBy().getFullName() : "-";

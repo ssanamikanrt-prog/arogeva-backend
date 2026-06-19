@@ -133,10 +133,10 @@ public class AuthService {
                 UserResponse ur = new UserResponse(user.getUserId(), user.getFullName(), user.getEmail(), devType, roleName);
                 
 
-                Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUserId(), null, java.util.Collections.emptyList());
-                String jwt = tokenProvider.generateToken(authentication);
+                String accessToken = tokenProvider.generateAccessToken(user.getUserId());
+                String refreshToken = tokenProvider.generateRefreshToken(user.getUserId());
                 
-                return new LoginResponse(true, "Login successful", ur, jwt);
+                return new LoginResponse(true, "Login successful", ur, accessToken, refreshToken);
             } else {
                 return new LoginResponse(false, "User is inactive", null);
             }
@@ -202,6 +202,22 @@ public class AuthService {
             return new LoginResponse(false, "Error creating user: " + e.getMessage(), null);
         }
     }
+    public LoginResponse refreshToken(String refreshToken) {
+        if (refreshToken == null || !tokenProvider.validateToken(refreshToken)) {
+            return new LoginResponse(false, "Invalid or expired refresh token", null);
+        }
 
+        String userId = tokenProvider.getUserIdFromJWT(refreshToken);
+        Optional<User> userOpt = userRepository.findByUserId(userId);
+        
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            if ("true".equalsIgnoreCase(user.getIsActive()) || "Y".equalsIgnoreCase(user.getIsActive()) || "1".equals(user.getIsActive())) {
+                String newAccessToken = tokenProvider.generateAccessToken(user.getUserId());
+                return new LoginResponse(true, "Token refreshed successfully", null, newAccessToken);
+            }
+        }
+        return new LoginResponse(false, "User not found or inactive", null);
+    }
 
 }
