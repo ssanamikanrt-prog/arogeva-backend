@@ -9,6 +9,7 @@ import com.hospital.Arogeva.service.ProjectWeekService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class ProjectWeekController {
 
     @Operation(summary = "Create or Update Project Week", description = "Creates a new Project Week if weekId is not provided, or updates existing if ID is provided")
     @PostMapping("/create-or-update")
-    public ResponseEntity<ApiResponse<ProjectWeekResponse>> createOrUpdateProjectWeek(@RequestBody ProjectWeekRequest request) {
+    public ResponseEntity<ApiResponse<ProjectWeekResponse>> createOrUpdateProjectWeek(@Valid @RequestBody ProjectWeekRequest request) {
         ProjectWeekResponse response = projectWeekService.createOrUpdateProjectWeek(request);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }

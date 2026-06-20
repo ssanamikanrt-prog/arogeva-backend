@@ -7,4 +7,13 @@ import java.util.List;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Integer> {
     List<Project> findByStatus(String status);
+
+    @org.springframework.data.jpa.repository.Query("SELECT DISTINCT p.architecture FROM Project p WHERE p.architecture IS NOT NULL")
+    List<String> findDistinctArchitectures();
+
+    @org.springframework.data.jpa.repository.Query("SELECT DISTINCT p.projectManager FROM Project p WHERE p.projectManager IS NOT NULL AND TRIM(p.projectManager) <> ''")
+    List<String> findDistinctProjectManagers();
+
+    @org.springframework.data.jpa.repository.Query("SELECT DISTINCT p.projectName FROM Project p WHERE p.projectName IS NOT NULL AND TRIM(p.projectName) <> ''")
+    List<String> findDistinctProjectNames();
 }

@@ -8,6 +8,7 @@ import com.hospital.Arogeva.service.ActivityTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class ActivityTypeController {
 
     @Operation(summary = "Create or Update Activity Type", description = "Creates a new Activity Type if activityId is not provided, or updates existing if ID is provided")
     @PostMapping("/create-or-update")
-    public ResponseEntity<ApiResponse<ActivityTypeResponse>> createOrUpdateActivityType(@RequestBody ActivityTypeRequest request) {
+    public ResponseEntity<ApiResponse<ActivityTypeResponse>> createOrUpdateActivityType(@Valid @RequestBody ActivityTypeRequest request) {
         ActivityTypeResponse response = activityTypeService.createOrUpdateActivityType(request);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }

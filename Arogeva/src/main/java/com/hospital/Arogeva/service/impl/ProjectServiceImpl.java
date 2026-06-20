@@ -10,7 +10,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
+import com.hospital.Arogeva.enums.ArchitectureType;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -167,4 +170,44 @@ public class ProjectServiceImpl implements ProjectService {
         response.setSuccess(true);
         return response;
     }
+
+
+    @Override
+    public List<String> getAllArchitectures() {
+        // Use LinkedHashSet to preserve insertion order (Enums first, then DB customs, then "Other")
+        Set<String> architectures = new LinkedHashSet<>();
+
+        //  Add all standard enum values (except "Other")
+        for (ArchitectureType type : ArchitectureType.values()) {
+            if (type != ArchitectureType.OTHER) {
+                architectures.add(type.getValue());
+            }
+        }
+
+        //  Add any custom architectures found in the database
+        List<String> dbArchitectures = projectRepository.findDistinctArchitectures();
+        for (String dbArch : dbArchitectures) {
+            if (dbArch != null && !dbArch.trim().isEmpty()) {
+                architectures.add(dbArch.trim());
+            }
+        }
+
+        architectures.add(ArchitectureType.OTHER.getValue());
+
+        return architectures.stream().collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getAllProjectManagers() {
+
+        return projectRepository.findDistinctProjectManagers();
+
+    }
+
+//    @Override
+//    public List<String> getAllProjectNames() {
+//
+//        return projectRepository.findDistinctProjectNames();
+//
+//    }
 }

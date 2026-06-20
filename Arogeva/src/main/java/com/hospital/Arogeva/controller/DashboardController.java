@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/dashboard")
-@Tag(name = "Dashboard", description = "Endpoints for Weekly Calculation Dashboard")
+@Tag(name = "Dashboard", description = "Endpoints for Weekly Calculation Dashboard of Specific Project")
 public class DashboardController {
 
     @Autowired

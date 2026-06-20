@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class AuthController {
 
     @Operation(summary = "Authenticate User", description = "Verifies the provided user ID and PIN to authenticate a user")
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest loginRequest) {
         LoginResponse response = authService.authenticate(loginRequest);
         if (response.isSuccess() && response.getRefreshToken() != null) {
             ResponseCookie cookie = ResponseCookie.from("refresh_token", response.getRefreshToken())
@@ -54,7 +55,7 @@ public class AuthController {
 
     @Operation(summary = "Create User", description = "Creates a new user and encrypts the password")
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<LoginResponse>> registerUser(@RequestBody CreateUserRequest request) {
+    public ResponseEntity<ApiResponse<LoginResponse>> registerUser(@Valid @RequestBody CreateUserRequest request) {
         LoginResponse response = authService.createUser(request);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }

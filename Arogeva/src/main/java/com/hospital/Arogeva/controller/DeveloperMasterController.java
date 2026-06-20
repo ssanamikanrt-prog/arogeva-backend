@@ -8,6 +8,7 @@ import com.hospital.Arogeva.service.DeveloperMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class DeveloperMasterController {
 
     @Operation(summary = "Create or Update Developer Master", description = "Creates a new Developer Master if developerTypeId is not provided, or updates existing if ID is provided")
     @PostMapping("/create-or-update")
-    public ResponseEntity<ApiResponse<DeveloperMasterResponse>> createOrUpdateDeveloperMaster(@RequestBody DeveloperMasterRequest request) {
+    public ResponseEntity<ApiResponse<DeveloperMasterResponse>> createOrUpdateDeveloperMaster(@Valid @RequestBody DeveloperMasterRequest request) {
         DeveloperMasterResponse response = developerMasterService.createOrUpdateDeveloperMaster(request);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
