@@ -9,6 +9,7 @@ import com.hospital.Arogeva.service.DailyEffortService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.security.Principal;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +31,7 @@ public class DailyEffortController {
 
     @Operation(summary = "Save or Update Effort Entry", description = "Creates a new daily effort entry if entryId is null, otherwise updates the existing entry.")
     @PostMapping("/save")
-    public ResponseEntity<ApiResponse<DailyEffortResponse>> saveOrUpdateEffort(@RequestBody DailyEffortRequest request, Principal principal) {
+    public ResponseEntity<ApiResponse<DailyEffortResponse>> saveOrUpdateEffort(@Valid @RequestBody DailyEffortRequest request, Principal principal) {
 
         String currentUserId = principal != null ? principal.getName() : null;
 

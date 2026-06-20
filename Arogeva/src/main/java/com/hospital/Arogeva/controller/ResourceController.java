@@ -8,6 +8,7 @@ import com.hospital.Arogeva.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class ResourceController {
 
     @Operation(summary = "Create or Update Resource", description = "Creates a new Resource if resourceId is not provided, or updates existing if ID is provided")
     @PostMapping("/create-or-update")
-    public ResponseEntity<ApiResponse<ResourceResponse>> createOrUpdateResource(@RequestBody ResourceRequest request) {
+    public ResponseEntity<ApiResponse<ResourceResponse>> createOrUpdateResource(@Valid @RequestBody ResourceRequest request) {
         ResourceResponse response = resourceService.createOrUpdateResource(request);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }

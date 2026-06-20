@@ -8,6 +8,7 @@ import com.hospital.Arogeva.service.ModuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class ModuleController {
 
     @Operation(summary = "Create or Update Module", description = "Creates a new Module if moduleId is not provided, or updates existing if ID is provided")
     @PostMapping("/create-or-update")
-    public ResponseEntity<ApiResponse<ModuleResponse>> createOrUpdateModule(@RequestBody ModuleRequest request) {
+    public ResponseEntity<ApiResponse<ModuleResponse>> createOrUpdateModule(@Valid @RequestBody ModuleRequest request) {
         ModuleResponse response = moduleService.createOrUpdateModule(request);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }

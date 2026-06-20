@@ -17,4 +17,10 @@ public interface ProjectService {
     ProjectResponse getProjectById(Integer projectId);
 
     ProjectResponse deleteProject(Integer projectId);
+
+    List<String> getAllArchitectures();
+    
+    List<String> getAllProjectManagers();
+    
+//    List<String> getAllProjectNames();
 }
