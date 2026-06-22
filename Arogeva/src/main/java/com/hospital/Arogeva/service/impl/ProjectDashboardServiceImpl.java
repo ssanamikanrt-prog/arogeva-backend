@@ -48,16 +48,7 @@ public class ProjectDashboardServiceImpl implements ProjectDashboardService {
                 .collect(java.util.stream.Collectors.toList());
         }
 
-        // 2. Filter Projects by Date Range (include any project that overlaps with this range)
-        if (startDate != null && endDate != null) {
-            allProjects = allProjects.stream()
-                .filter(p -> p.getStartDate() != null && p.getEndDate() != null && 
-                             !p.getStartDate().isAfter(endDate) && 
-                             !p.getEndDate().isBefore(startDate))
-                .collect(java.util.stream.Collectors.toList());
-        }
-
-        // 3. Fetch and filter Daily Efforts for accurate Actual Man-Days
+        // 2. Fetch and filter Daily Efforts for accurate Actual Man-Days and dynamic project inclusion
         List<DailyEffortEntry> allEfforts = dailyEffortRepository.findAll();
         
         if (projectId != null) {
@@ -72,9 +63,45 @@ public class ProjectDashboardServiceImpl implements ProjectDashboardService {
                 .collect(Collectors.toList());
         }
         
-        if (startDate != null && endDate != null) {
+        if (startDate != null || endDate != null) {
             allEfforts = allEfforts.stream()
-                .filter(e -> e.getWorkDate() != null && !e.getWorkDate().isBefore(startDate) && !e.getWorkDate().isAfter(endDate))
+                .filter(e -> {
+                    if (e.getWorkDate() == null) return false;
+                    boolean afterStart = startDate == null || !e.getWorkDate().isBefore(startDate);
+                    boolean beforeEnd = endDate == null || !e.getWorkDate().isAfter(endDate);
+                    return afterStart && beforeEnd;
+                })
+                .collect(Collectors.toList());
+        }
+
+        // 3. Filter Projects by Date Range (include any project that overlaps with this range OR has efforts in this range)
+        if (startDate != null || endDate != null) {
+            java.util.Set<Integer> activeProjectIds = allEfforts.stream()
+                .filter(e -> e.getProject() != null)
+                .map(e -> e.getProject().getProjectId())
+                .collect(Collectors.toSet());
+
+            allProjects = allProjects.stream()
+                .filter(p -> {
+                    // If the project has logged efforts in this period, it's definitely active
+                    if (activeProjectIds.contains(p.getProjectId())) {
+                        return true;
+                    }
+                    
+                    LocalDate pStart = p.getStartDate();
+                    LocalDate pEnd = p.getEndDate() != null ? p.getEndDate() : LocalDate.MAX;
+                    
+                    if (pStart == null) return false; // Without a start date and without efforts, we assume it's not active in this period
+                    
+                    boolean overlaps = true;
+                    if (startDate != null) {
+                        overlaps = overlaps && !pEnd.isBefore(startDate);
+                    }
+                    if (endDate != null) {
+                        overlaps = overlaps && !pStart.isAfter(endDate);
+                    }
+                    return overlaps;
+                })
                 .collect(Collectors.toList());
         }
 
