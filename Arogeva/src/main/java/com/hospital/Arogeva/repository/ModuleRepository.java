@@ -7,5 +7,8 @@ import java.util.List;
 
 @Repository
 public interface ModuleRepository extends JpaRepository<Module, Integer> {
+
     List<Module> findByProject_ProjectId(Integer projectId);
+
+
 }

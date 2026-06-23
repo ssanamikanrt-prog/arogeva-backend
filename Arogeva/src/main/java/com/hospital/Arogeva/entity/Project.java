@@ -32,8 +32,6 @@ public class Project {
     @Column(name = "planned_budget", precision = 15, scale = 2)
     private BigDecimal plannedBudget;
 
-
-
     @Column(name = "start_date")
     private LocalDate startDate;
 
@@ -51,6 +49,9 @@ public class Project {
 
     @Column(name = "status")
     private String status;
+
+    @Column(name = "project_manager_id")
+    private String projectManagerId;
 
     @Column(name = "project_manager")
     private String projectManager;

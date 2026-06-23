@@ -27,28 +27,41 @@ public class WorkStatusController {
     @Operation(summary = "Create or Update Work Status", description = "Creates a new Work Status if statusId is not provided, or updates existing if ID is provided")
     @PostMapping("/create-or-update")
     public ResponseEntity<ApiResponse<WorkStatusResponse>> createOrUpdateWorkStatus(@Valid @RequestBody WorkStatusRequest request) {
+
         WorkStatusResponse response = workStatusService.createOrUpdateWorkStatus(request);
+
         return ResponseEntity.ok(new ApiResponse<>(response));
+
     }
 
     @Operation(summary = "Get All Work Statuses", description = "Fetches all available Work Statuses")
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<List<WorkStatusResponse>>> getAllWorkStatuses() {
+
         List<WorkStatusResponse> response = workStatusService.getAllWorkStatuses();
+
         return ResponseEntity.ok(new ApiResponse<>(response));
+
     }
 
     @Operation(summary = "Get Work Status By ID", description = "Fetches a specific Work Status by its ID")
     @GetMapping("/{statusId}")
     public ResponseEntity<ApiResponse<WorkStatusResponse>> getWorkStatusById(@PathVariable Integer statusId) {
+
         WorkStatusResponse response = workStatusService.getWorkStatusById(statusId);
+
         return ResponseEntity.ok(new ApiResponse<>(response));
+
     }
 
     @Operation(summary = "Delete Work Status", description = "Deletes a Work Status by its ID")
     @DeleteMapping("/{statusId}")
     public ResponseEntity<ApiResponse<WorkStatusResponse>> deleteWorkStatus(@PathVariable Integer statusId) {
+
         WorkStatusResponse response = workStatusService.deleteWorkStatus(statusId);
+
+
         return ResponseEntity.ok(new ApiResponse<>(response));
+
     }
 }

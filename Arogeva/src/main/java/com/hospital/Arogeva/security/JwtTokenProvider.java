@@ -17,11 +17,28 @@ public class JwtTokenProvider {
     private final String jwtSecretString = "ArogevaSuperSecretKeyForJwtValidationThatIsAtLeast32Bytes!";
     private final Key jwtSecret = Keys.hmacShaKeyFor(jwtSecretString.getBytes(StandardCharsets.UTF_8));
 
-    // 1 hour for access token
-    private final int jwtExpirationInMs = 3600000;
-    
-    // 7 days for refresh token
-    private final int refreshExpirationInMs = 604800000;
+
+    // 90 days for access token
+    private final long jwtExpirationInMs = 1000L * 60 * 60 * 24 * 90;        //90days
+
+    // 180 days for refresh token
+    private final long refreshExpirationInMs = 1000L * 60 * 60 * 24 * 180;   //180 days
+
+
+//    // 1 hour for access token
+//    private final int jwtExpirationInMs = 3600000;
+//
+//    // 7 days for refresh token
+//    private final int refreshExpirationInMs = 604800000;
+
+
+//
+//    private final long EXPIRATION_TIME = 1000L * 60 * 60 * 24 * 90; // 90 days
+////	private final long EXPIRATION_TIME = 1000L * 60 * 1; // 1 minute
+//
+//    private final long REFRESH_TOKEN_EXPIRATION = 1000L * 60 * 60 * 24 * 180; // 180 days
+
+
 
     public String generateAccessToken(String userIdStr) {
         Date now = new Date();

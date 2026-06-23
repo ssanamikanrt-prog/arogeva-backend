@@ -2,6 +2,7 @@ package com.hospital.Arogeva.advices;
 
 
 import com.hospital.Arogeva.exceptions.ResourceNotFoundException;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,7 +13,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@io.swagger.v3.oas.annotations.Hidden
+@Hidden
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -33,6 +34,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleInternalServerError(Exception exception) {
+
         ApiError apiError = ApiError.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .message(exception.getMessage())
@@ -44,16 +46,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ApiResponse<Object>> handleNoResourceFound(NoResourceFoundException exception) {
+
         ApiError apiError = ApiError.builder()
                 .status(HttpStatus.NOT_FOUND)
                 .message(exception.getMessage())
                 .build();
         return buildErrorResponseEntity(apiError);
+
     }
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Object>> handleInputValidationError(MethodArgumentNotValidException exception) {
+
         List<String> errors = exception
                 .getBindingResult()
                 .getAllErrors()
@@ -71,7 +76,9 @@ public class GlobalExceptionHandler {
     }
 
     private ResponseEntity<ApiResponse<Object>> buildErrorResponseEntity(ApiError apiError) {
+
         return new ResponseEntity<>(new ApiResponse<>(apiError), apiError.getStatus());
+
     }
 
 
