@@ -3,6 +3,7 @@ package com.hospital.Arogeva.service;
 import com.hospital.Arogeva.advices.ApiResponse;
 import com.hospital.Arogeva.entity.Resource;
 import com.hospital.Arogeva.entity.User;
+import com.hospital.Arogeva.enums.AppRole;
 import com.hospital.Arogeva.payload.LoginRequest;
 import com.hospital.Arogeva.payload.LoginResponse;
 import com.hospital.Arogeva.payload.UserResponse;
@@ -96,6 +97,14 @@ public class AuthService {
         }).collect(Collectors.toList());
     }
 
+    public List<UserResponse> getManagersForDropdown() {
+        return getAllUsersForDropdown().stream()
+                .filter(u -> "ROLE_MANAGER".equals(u.getRoleName()))
+                .collect(Collectors.toList());
+    }
+
+
+
     public LoginResponse authenticate(LoginRequest request) {
         if (request.getEmail() == null || request.getEmail().isEmpty()) {
             return new LoginResponse(false, "Email is required", null);
@@ -144,7 +153,7 @@ public class AuthService {
         return new LoginResponse(false, "User not found", null);
     }
 
-    public LoginResponse createUser(CreateUserRequest request) {
+    public LoginResponse createUser(CreateUserRequest request, AppRole roleName) {
         try {
 
             if (request.getEmail() != null && !request.getEmail().isEmpty()) {
@@ -162,8 +171,8 @@ public class AuthService {
             }
 
             Role roleToAssign = null;
-            if (request.getRoleName() != null && !request.getRoleName().trim().isEmpty()) {
-                Optional<Role> roleOpt = roleRepository.findByRoleName(request.getRoleName());
+            if (roleName != null) {
+                Optional<Role> roleOpt = roleRepository.findByRoleName(roleName.name());
                 if (!roleOpt.isPresent()) {
                     return new LoginResponse(false, "Invalid role name. Please provide an existing role.", null);
                 }
@@ -195,7 +204,7 @@ public class AuthService {
                 userRoleRepository.save(userRole);
             }
 
-            UserResponse ur = new UserResponse(user.getUserId(), user.getFullName(), user.getEmail(), null, request.getRoleName());
+            UserResponse ur = new UserResponse(user.getUserId(), user.getFullName(), user.getEmail(), null, roleName != null ? roleName.name() : "UNKNOWN");
             return new LoginResponse(true, "User created successfully", ur);
         } catch (Exception e) {
             e.printStackTrace();

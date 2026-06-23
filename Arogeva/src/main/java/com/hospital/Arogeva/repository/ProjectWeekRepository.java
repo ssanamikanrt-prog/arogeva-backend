@@ -7,5 +7,13 @@ import java.util.List;
 
 @Repository
 public interface ProjectWeekRepository extends JpaRepository<ProjectWeek, Integer> {
+
+
+
+
+
+
     List<ProjectWeek> findByProject_ProjectId(Integer projectId);
+
+
 }

@@ -27,6 +27,7 @@ public class ProjectResponse {
 
     private String status;
 
+    private String projectManagerId;
     private String projectManager;
     private String client;
 

@@ -27,35 +27,50 @@ public class RoleController {
     @Operation(summary = "Create or Update Role", description = "Creates a new Role if roleId is not provided, or updates existing if ID is provided")
     @PostMapping("/create-or-update")
     public ResponseEntity<ApiResponse<RoleResponse>> createOrUpdateRole(@Valid @RequestBody RoleRequest request) {
+
         RoleResponse response = roleService.createOrUpdateRole(request);
+
         return ResponseEntity.ok(new ApiResponse<>(response));
+
     }
 
     @Operation(summary = "Get All Roles", description = "Fetches all available Roles")
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<List<RoleResponse>>> getAllRoles() {
+
         List<RoleResponse> response = roleService.getAllRoles();
+
         return ResponseEntity.ok(new ApiResponse<>(response));
+
     }
 
     @Operation(summary = "Get Role By ID", description = "Fetches a specific Role by its ID")
     @GetMapping("/{roleId}")
     public ResponseEntity<ApiResponse<RoleResponse>> getRoleById(@PathVariable Integer roleId) {
+
         RoleResponse response = roleService.getRoleById(roleId);
+
         return ResponseEntity.ok(new ApiResponse<>(response));
+
     }
 
     @Operation(summary = "Get Role By Name", description = "Fetches a specific Role by its name")
     @GetMapping("/name/{roleName}")
     public ResponseEntity<ApiResponse<RoleResponse>> getRoleByName(@PathVariable String roleName) {
+
         RoleResponse response = roleService.getRoleByName(roleName);
+
         return ResponseEntity.ok(new ApiResponse<>(response));
+
     }
 
     @Operation(summary = "Delete Role", description = "Deletes a Role by its ID")
     @DeleteMapping("/{roleId}")
     public ResponseEntity<ApiResponse<RoleResponse>> deleteRole(@PathVariable Integer roleId) {
+
         RoleResponse response = roleService.deleteRole(roleId);
+
         return ResponseEntity.ok(new ApiResponse<>(response));
+
     }
 }

@@ -23,7 +23,10 @@ public class DashboardController {
     @GetMapping("/executive")
     public ResponseEntity<ApiResponse<ExecutiveDashboardResponse>> getExecutiveDashboard(
             @RequestParam(required = false, defaultValue = "1") Integer projectId) {
+
+
         return ResponseEntity.ok(new ApiResponse<>(dashboardService.getExecutiveDashboard(projectId)));
+
     }
 
     @Operation(summary = "Get Dashboard Data for a Specific Week")
@@ -31,35 +34,46 @@ public class DashboardController {
     public ResponseEntity<ApiResponse<WeeklyDashboardResponse>> getWeeklyDashboardData(
             @PathVariable Integer weekId,
             @RequestParam(required = false) Integer projectId) {
+
+
         return ResponseEntity.ok(new ApiResponse<>(dashboardService.getWeeklyDashboardData(weekId, projectId)));
+
     }
 
     @Operation(summary = "Get Week-wise Total Summary")
     @GetMapping("/summary")
     public ResponseEntity<ApiResponse<WeekSummaryWrapperResponse>> getWeeklySummaryData(
             @RequestParam(required = false) Integer projectId) {
+
         return ResponseEntity.ok(new ApiResponse<>(dashboardService.getWeeklySummaryData(projectId)));
+
     }
 
     @Operation(summary = "Get Resource Summary")
     @GetMapping("/resources")
     public ResponseEntity<ApiResponse<ResourceSummaryWrapperResponse>> getResourceSummary(
             @RequestParam(required = false) Integer projectId) {
+
         return ResponseEntity.ok(new ApiResponse<>(dashboardService.getResourceSummary(projectId)));
+
     }
 
     @Operation(summary = "Get Module Summary")
     @GetMapping("/modules")
     public ResponseEntity<ApiResponse<ModuleSummaryWrapperResponse>> getModuleSummary(
             @RequestParam(required = false) Integer projectId) {
+
         return ResponseEntity.ok(new ApiResponse<>(dashboardService.getModuleSummary(projectId)));
+
     }
 
     @Operation(summary = "Get All Daily Effort Entries")
     @GetMapping("/entries")
     public ResponseEntity<ApiResponse<EffortEntryWrapperResponse>> getAllEffortEntries(
             @RequestParam(required = false) Integer projectId) {
+
         return ResponseEntity.ok(new ApiResponse<>(dashboardService.getAllEffortEntries(projectId)));
+
     }
 
     @Operation(summary = "Get Daily Effort Entries by Resource ID")
@@ -67,7 +81,9 @@ public class DashboardController {
     public ResponseEntity<ApiResponse<EffortEntryWrapperResponse>> getEffortEntriesByResource(
             @PathVariable Integer resourceId,
             @RequestParam(required = false) Integer projectId) {
+
         return ResponseEntity.ok(new ApiResponse<>(dashboardService.getEffortEntriesByResource(resourceId, projectId)));
+
     }
 
 

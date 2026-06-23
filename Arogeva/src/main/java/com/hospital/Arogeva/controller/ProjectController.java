@@ -2,6 +2,7 @@ package com.hospital.Arogeva.controller;
 
 import com.hospital.Arogeva.advices.ApiResponse;
 
+import com.hospital.Arogeva.payload.ManagerProjectResponse;
 import com.hospital.Arogeva.payload.ProjectRequest;
 import com.hospital.Arogeva.payload.ProjectResponse;
 import com.hospital.Arogeva.service.ProjectService;
@@ -35,11 +36,12 @@ public class ProjectController {
     }
 
 
-    @Operation(summary = "Get All Projects", description = "Fetches all available Projects")
+    @Operation(summary = "Get All Projects byDefault and getAll by using projectManagerId", description = "Fetches all available Projects, optionally filtered by projectManager")
     @GetMapping("/all")
-    public ResponseEntity<ApiResponse<List<ProjectResponse>>> getAllProjects() {
+    public ResponseEntity<ApiResponse<List<ProjectResponse>>> getAllProjects(
+            @RequestParam(required = false) String projectManagerId) {
 
-        List<ProjectResponse> response = projectService.getAllProjects();
+        List<ProjectResponse> response = projectService.getAllProjects(projectManagerId);
 
         return ResponseEntity.ok(new ApiResponse<>(response));
 
@@ -99,6 +101,15 @@ public class ProjectController {
         return ResponseEntity.ok(new ApiResponse<>(response));
 
     }
+
+
+    
+//    @Operation(summary = "Get Projects By Manager", description = "Fetches a simple list of projects assigned to a specific project manager")
+//    @GetMapping("/manager/{projectManagerId}")
+//    public ResponseEntity<ApiResponse<List<ManagerProjectResponse>>> getProjectsByManager(@PathVariable String projectManagerId) {
+//        List<ManagerProjectResponse> response = projectService.getSimpleProjectsByManager(projectManagerId);
+//        return ResponseEntity.ok(new ApiResponse<>(response));
+//    }
 
 //    @Operation(summary = "Get All Project Names", description = "Fetches a distinct list of all project names from the database")
 //    @GetMapping("/projectNames")

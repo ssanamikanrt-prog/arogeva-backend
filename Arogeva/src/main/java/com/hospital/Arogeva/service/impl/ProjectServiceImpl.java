@@ -1,9 +1,12 @@
 package com.hospital.Arogeva.service.impl;
 
 import com.hospital.Arogeva.entity.Project;
+import com.hospital.Arogeva.payload.ManagerProjectResponse;
 import com.hospital.Arogeva.payload.ProjectRequest;
 import com.hospital.Arogeva.payload.ProjectResponse;
 import com.hospital.Arogeva.repository.ProjectRepository;
+import com.hospital.Arogeva.repository.UserRepository;
+import com.hospital.Arogeva.entity.User;
 import com.hospital.Arogeva.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     private ProjectRepository projectRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public ProjectResponse createOrUpdateProject(ProjectRequest request) {
@@ -44,6 +50,16 @@ public class ProjectServiceImpl implements ProjectService {
                     project.setArchitecture(request.getArchitecture());
                     project.setUpdatedAt(LocalDateTime.now());
                     project.setStatus(request.getStatus());
+
+                    // Auto lookup the manager ID based on the name
+                    project.setProjectManagerId(null);
+                    if (request.getProjectManager() != null && !request.getProjectManager().trim().isEmpty()) {
+                        Optional<User> managerOpt = userRepository.findByFullName(request.getProjectManager());
+                        if (managerOpt.isPresent()) {
+                            project.setProjectManagerId(managerOpt.get().getUserId());
+                        }
+                    }
+
                     project.setProjectManager(request.getProjectManager());
                     project.setClient(request.getClient());
                     projectRepository.save(project);
@@ -66,6 +82,16 @@ public class ProjectServiceImpl implements ProjectService {
                 project.setArchitecture(request.getArchitecture());
                 project.setCreatedAt(LocalDateTime.now());
                 project.setStatus(request.getStatus());
+
+                // Auto lookup the manager ID based on the name
+                project.setProjectManagerId(null);
+                if (request.getProjectManager() != null && !request.getProjectManager().trim().isEmpty()) {
+                    Optional<User> managerOpt = userRepository.findByFullName(request.getProjectManager());
+                    if (managerOpt.isPresent()) {
+                        project.setProjectManagerId(managerOpt.get().getUserId());
+                    }
+                }
+
                 project.setProjectManager(request.getProjectManager());
                 project.setClient(request.getClient());
                 projectRepository.save(project);
@@ -84,6 +110,7 @@ public class ProjectServiceImpl implements ProjectService {
             response.setCreatedAt(project.getCreatedAt());
             response.setUpdatedAt(project.getUpdatedAt());
             response.setStatus(project.getStatus());
+            response.setProjectManagerId(project.getProjectManagerId());
             response.setProjectManager(project.getProjectManager());
             response.setClient(project.getClient());
             
@@ -91,17 +118,35 @@ public class ProjectServiceImpl implements ProjectService {
             response.setSuccess(false);
             response.setMessage("Error: " + e.getMessage());
         }
-        
         return response;
     }
 
     @Override
-    public List<ProjectResponse> getAllProjects() {
+    public List<ProjectResponse> getAllProjects(String projectManagerId) {
+        if (projectManagerId != null && !projectManagerId.trim().isEmpty()) {
+            return projectRepository.findByProjectManagerId(projectManagerId)
+                    .stream()
+                    .map(this::convertToResponse)
+                    .collect(Collectors.toList());
+        }
         return projectRepository.findAll()
                 .stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<ManagerProjectResponse> getSimpleProjectsByManager(String projectManagerId) {
+        return projectRepository.findByProjectManagerId(projectManagerId)
+                .stream()
+                .map(p -> new ManagerProjectResponse(
+                        p.getProjectId(),
+                        p.getProjectName(),
+                        p.getProjectManagerId(),
+                        p.getProjectManager()
+                )).collect(Collectors.toList());
+    }
+
 
     @Override
     public List<ProjectResponse> getProjectsByStatus(String status) {
@@ -165,6 +210,7 @@ public class ProjectServiceImpl implements ProjectService {
         response.setCreatedAt(project.getCreatedAt());
         response.setUpdatedAt(project.getUpdatedAt());
         response.setStatus(project.getStatus());
+        response.setProjectManagerId(project.getProjectManagerId());
         response.setProjectManager(project.getProjectManager());
         response.setClient(project.getClient());
         response.setSuccess(true);
@@ -174,17 +220,18 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<String> getAllArchitectures() {
-        // Use LinkedHashSet to preserve insertion order (Enums first, then DB customs, then "Other")
+
+        // use LinkedHashSet to preserve insertion order Enums first, then DB customs, then other
         Set<String> architectures = new LinkedHashSet<>();
 
-        //  Add all standard enum values (except "Other")
+        //  Add all standard enum values except others
         for (ArchitectureType type : ArchitectureType.values()) {
             if (type != ArchitectureType.OTHER) {
                 architectures.add(type.getValue());
             }
         }
 
-        //  Add any custom architectures found in the database
+        //  add any custom architectures found in the database
         List<String> dbArchitectures = projectRepository.findDistinctArchitectures();
         for (String dbArch : dbArchitectures) {
             if (dbArch != null && !dbArch.trim().isEmpty()) {
