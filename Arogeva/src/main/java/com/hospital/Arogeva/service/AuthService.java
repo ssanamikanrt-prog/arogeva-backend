@@ -114,7 +114,7 @@ public class AuthService {
         if (userOpt.isPresent()) {
             User user = userOpt.get();
 
-            // Fetch role for response and authorization check
+           
             String roleName = userRoleRepository.findAll().stream()
                     .filter(ur -> ur.getUser() != null && ur.getUser().getUserId().equals(user.getUserId()))
                     .map(ur -> ur.getRole() != null ? ur.getRole().getRoleName() : "UNKNOWN")
@@ -129,7 +129,7 @@ public class AuthService {
                 return new LoginResponse(false, "Invalid PIN", null);
             }
 
-            //authentication is successful
+
             if ("true".equalsIgnoreCase(user.getIsActive()) || "Y".equalsIgnoreCase(user.getIsActive()) || "1".equals(user.getIsActive())) {
 
 
@@ -180,11 +180,13 @@ public class AuthService {
             }
 
             User user = new User();
+
             user.setFullName(request.getFullName());
+
             user.setUserId(request.getUserId());
+
             user.setEmail(request.getEmail());
             user.setMobileNumber(request.getMobileNumber());
-            
 
             String saltedPassword = request.getPassword() + STATIC_SALT;
             String saltedHashedPassword = passwordEncoder.encode(saltedPassword);

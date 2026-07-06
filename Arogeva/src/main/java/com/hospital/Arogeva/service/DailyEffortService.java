@@ -73,6 +73,7 @@ public class DailyEffortService {
 
             entry.setResource(request.getResourceId() != null ? resourceRepository.getReferenceById(request.getResourceId()) : null);
             entry.setProject(request.getProjectId() != null ? projectRepository.getReferenceById(request.getProjectId()) : null);
+
             entry.setWeek(request.getWeekId() != null ? projectWeekRepository.getReferenceById(request.getWeekId()) : null);
             entry.setModule(request.getModuleId() != null ? moduleRepository.getReferenceById(request.getModuleId()) : null);
             entry.setActivity(request.getActivityId() != null ? activityTypeRepository.getReferenceById(request.getActivityId()) : null);
